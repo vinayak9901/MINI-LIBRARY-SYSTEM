@@ -9,7 +9,10 @@ app = FastAPI(title="Mini-Library API")
 # TELL THE BOUNCER TO ONLY ALLOW YOUR NEXT.JS FRONTEND
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], # Specifically allow Next.js
+    allow_origins=[
+        "http://localhost:3000", 
+        "https://mls-frontend-app.vercel.app" # <-- ADD YOUR VERCEL URL HERE
+    ], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,13 +1,21 @@
 from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware # IMPORT THE BOUNCER
 from pydantic import BaseModel
 from typing import Optional, List
 
-# Initialize the API
 app = FastAPI(title="Mini-Library API")
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the Mini-Library API! Go to /docs to test it."}
 
+
+# TELL THE BOUNCER TO ONLY ALLOW YOUR NEXT.JS FRONTEND
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"], # Specifically allow Next.js
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ... (keep all your fake_db and endpoint code exactly the same below this) ...
 # --- FAKE DATABASE ---
 # For this example, we will store data in a simple Python dictionary instead of a real database.
 fake_db = {
@@ -78,3 +86,13 @@ def update_book(id: int, book: BookCreate):
     fake_db[id] = updated_book
     
     return updated_book
+
+# 5. DELETE /books/{id} -> Delete a book
+@app.delete("/books/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_book(id: int):
+    # Check if the book actually exists
+    if id not in fake_db:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Delete it from our dictionary
+    del fake_db[id]
